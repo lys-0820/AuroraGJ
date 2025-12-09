@@ -44,7 +44,10 @@ public class DeerController : MonoBehaviour
     public DeerState currentState = DeerState.Hidden;
     public int currentIndex = 0;       // 正在处理的路径点索引（鹿出现的位置索引）
     [Header("可视隐藏")]
-    public GameObject deerVisualRoot;   // 指向鹿的模型根节点（不是挂脚本的这个）
+    public GameObject deerVisualRoot;   // 指向鹿的模型根节点
+    [Header("停留时间设置")]
+    public float idleDisappearTime = 5f;     // 出现后停留多久自动消失
+    private float idleTimer = 0f;
 
     private List<Transform> pathPoints;
     private Vector3 currentVanishPos;  // 当前段的消失位置（鹿跑到这里消失并掉光晕）
@@ -52,6 +55,7 @@ public class DeerController : MonoBehaviour
     private bool   waitingForNextSpawn = false;
     private bool   finalSegmentPending = false; // 是否正在等待“最后一段”的光晕被踩掉
     private float  lookTimer = 0f;
+    public float closeTriggerDistance = 6f;  // 玩家必须靠近鹿才能触发注视跑走
 
     void Start()
     {
@@ -70,9 +74,15 @@ public class DeerController : MonoBehaviour
             return;
         }
 
-        // 第一个点：一开始就出现
+        // // 第一个点：一开始就出现
+        // currentIndex = 0;
+        // SpawnAtCurrentPoint(firstSpawn: true);
+        // 一开始不出现，等摇铃才出现
         currentIndex = 0;
-        SpawnAtCurrentPoint(firstSpawn: true);
+        SetDeerVisible(false);
+        currentState = DeerState.Hidden;
+        waitingForNextSpawn = false;
+        finalSegmentPending = false;
     }
 
     void Update()
@@ -94,7 +104,6 @@ public class DeerController : MonoBehaviour
                 break;
 
             case DeerState.Finished:
-                // 剧情结束，但可能还有最后一个光晕在地上
                 UpdateFinishedHalo();
                 break;
         }
@@ -141,8 +150,8 @@ public class DeerController : MonoBehaviour
                 return;
             }
 
-            // 否则在下一个点出现
-            SpawnAtCurrentPoint(firstSpawn: false);
+            // 非最后一段：只清理状态，不自动出现，等下一次摇铃
+            currentState = DeerState.Hidden;
         }
     }
 
@@ -150,6 +159,15 @@ public class DeerController : MonoBehaviour
     void UpdateIdle()
     {
         if (player == null) return;
+        // 出现后计时，超过 idleDisappearTime 就暂时消失
+        idleTimer += Time.deltaTime;
+        if (idleTimer >= idleDisappearTime)
+        {
+        SetDeerVisible(false);
+        currentState = DeerState.Hidden;
+        // 之后玩家可以摇铃再次在同一个点召唤
+        return;
+        }
 
         Vector3 toDeer = transform.position - player.position;
         toDeer.y = 0f;
@@ -176,13 +194,46 @@ public class DeerController : MonoBehaviour
         float angle = Vector3.Angle(playerForward, toDeer);
 
         // 是否在“面对鹿”的视角锥内
-        if (angle <= lookAngleThreshold)
+        bool isLooking = angle <= lookAngleThreshold;
+
+        // 必须靠近鹿才能触发跑走
+        float horizontalDist = Vector2.Distance(
+        new Vector2(player.position.x, player.position.z),
+        new Vector2(transform.position.x, transform.position.z)
+        );
+
+        bool isCloseEnough = horizontalDist <= closeTriggerDistance;
+        // 树木遮挡检测
+        bool hasClearLineOfSight = false;
+
+        // 从玩家眼睛位置射线检查
+        Vector3 eyePos = player.position + Vector3.up * 1.6f;
+        Vector3 dirToDeer = (transform.position + Vector3.up * 1f) - eyePos; // 鹿胸口高度
+        float rayDistance = dirToDeer.magnitude;  // 射线长度 = 玩家到鹿的实际距离
+        if (Physics.Raycast(eyePos, dirToDeer.normalized, out RaycastHit hit, rayDistance))
+        {
+            if (hit.collider != null)
+            {
+            // 命中物体可以是鹿根节点的任何子物体
+            if (deerVisualRoot != null && hit.collider.transform.IsChildOf(deerVisualRoot.transform))
+            {
+            hasClearLineOfSight = true;
+            }
+            }
+        }
+        else
+        {
+        // 射线一路畅通到鹿附近，也当作无遮挡
+        hasClearLineOfSight = true;
+        }
+        bool canTriggerRun = isLooking && isCloseEnough && hasClearLineOfSight;
+
+        if (canTriggerRun)
         {
             lookTimer += Time.deltaTime;
 
             if (lookTimer >= lookDuration)
             {
-                // 开始跑走
                 StartRunAway();
             }
         }
@@ -190,6 +241,7 @@ public class DeerController : MonoBehaviour
         {
             lookTimer = 0f;
         }
+        
     }
 
     // RunAway：朝 currentVanishPos 跑，到了就消失并掉落光晕
@@ -257,6 +309,8 @@ public class DeerController : MonoBehaviour
         currentState = DeerState.Idle;
         // 出现时切回静止动画
         SetRunAnimation(false);
+        // 出现时重置停留计时
+        idleTimer = 0f;
 
         // 出现时面向玩家（如果有玩家）
         if (player != null)
@@ -314,8 +368,10 @@ public class DeerController : MonoBehaviour
     {
         currentState = DeerState.RunAway;
         lookTimer = 0f;
+        idleTimer = 0f;
         // 切到跑步动画
         SetRunAnimation(true);
+        waitingForNextSpawn = true;   // 禁止摇铃出现（直到痕迹被踩掉）
     }
 
     // 跑到消失点 → 掉落光晕 → 等待玩家踩掉
@@ -396,6 +452,18 @@ public class DeerController : MonoBehaviour
 
     #endregion
 
+    #region 摇铃相关
+    public void OnBellRung()
+    {
+    // 若鹿正在跑、正在等待痕迹被踩掉 → 不出现
+    if (currentState == DeerState.RunAway || waitingForNextSpawn || currentState == DeerState.Idle)
+        return;
+
+    // 否则在当前路径点出现（无论玩家在哪）
+    SpawnAtCurrentPoint(firstSpawn:false);
+    }
+
+    #endregion
     void OnDrawGizmosSelected()
     {
         // 可视化消失点
