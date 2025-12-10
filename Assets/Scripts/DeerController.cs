@@ -451,6 +451,48 @@ public class DeerController : MonoBehaviour
     }
 
     #endregion
+    /// <summary>
+    /// 每次生成新迷宫后，由 MazeManager 调用，切换到新的 MainPath。
+    /// </summary>
+    public void ResetWithNewPath(MainPath newPath)
+    {
+        if (newPath == null)
+        {
+            Debug.LogError("DeerController.ResetWithNewPath: newPath 为 null");
+            return;
+        }
+
+        mainPath = newPath;
+        pathPoints = mainPath.waypoints;
+
+        if (pathPoints == null || pathPoints.Count == 0)
+        {
+            Debug.LogError("DeerController.ResetWithNewPath: 路径点为空");
+            return;
+        }
+
+        // 确保脚本重新启用（Start 里可能因为路径为空被禁用过）
+        enabled = true;
+
+        // 重置内部状态
+        currentIndex = 0;
+        waitingForNextSpawn = false;
+        finalSegmentPending = false;
+        lookTimer = 0f;
+        idleTimer = 0f;
+
+        // 清理上一关残留的光晕 & 视觉
+        RemoveHalo();
+        SetDeerVisible(false);
+        SetRunAnimation(false);
+
+        // 初始化消失/光晕位置（主要是避免 Gizmos 画在 (0,0,0)）
+        currentVanishPos = pathPoints[0].position;
+        lastVanishPos = currentVanishPos;
+
+        // 回到“隐藏等待被铃铛召唤”的状态
+        currentState = DeerState.Hidden;
+    }
 
     #region 摇铃相关
     public void OnBellRung()

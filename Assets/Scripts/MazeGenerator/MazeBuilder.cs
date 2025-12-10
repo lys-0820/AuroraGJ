@@ -6,6 +6,8 @@ public class MazeBuilder : MonoBehaviour
     [Header("Prefabs")]
     [Tooltip("用作墙的树 Prefab 列表，每次生成墙时会随机选一个")]
     public GameObject[] wallPrefabs;
+    [Tooltip("实际参与随机的树种类数量（0 或负数表示使用全部）")]
+    public int maxTreeTypesToUse = 0;
 
     [Tooltip("出口 Prefab")]
     public GameObject exitPrefab;
@@ -232,7 +234,14 @@ public class MazeBuilder : MonoBehaviour
         if (wallPrefabs == null || wallPrefabs.Length == 0)
             return null;
 
-        int idx = Random.Range(0, wallPrefabs.Length);
+        // 允许只从前 N 种树里随机，N <= 0 时表示用全部
+        int maxTypes = wallPrefabs.Length;
+        if (maxTreeTypesToUse > 0)
+        {
+            maxTypes = Mathf.Clamp(maxTreeTypesToUse, 1, wallPrefabs.Length);
+        }
+
+        int idx = Random.Range(0, maxTypes);
         return wallPrefabs[idx];
     }
 
