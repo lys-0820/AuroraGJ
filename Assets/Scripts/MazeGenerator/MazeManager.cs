@@ -25,6 +25,8 @@ public class MazeManager : MonoBehaviour
         [Tooltip("这一关迷宫高度")]
         public int height = 10;
     }
+    [Header("Decoration")]
+    public MazeDecorator mazeDecorator;
 
     [Header("Maze Type & Sequence")]
     [Tooltip("是否按关卡顺序使用不同迷宫类型 + 难度")]
@@ -76,6 +78,8 @@ public class MazeManager : MonoBehaviour
 
         // 1. 清理旧迷宫
         mazeBuilder.ClearMaze();
+        if (mazeDecorator != null)
+            mazeDecorator.ClearProps();
         currentMazeData = null;
 
         // 2. 配置本关迷宫参数
@@ -125,7 +129,11 @@ public class MazeManager : MonoBehaviour
 
         // 4. 实例化到场景
         mazeBuilder.Build(currentMazeData);
-
+        // 4.5 路面装饰
+        if (mazeDecorator != null)
+        {
+            mazeDecorator.Decorate(currentMazeData);
+        }
         // 5. 把玩家放到起点
         if (player != null && currentMazeData.startCell != null)
         {
