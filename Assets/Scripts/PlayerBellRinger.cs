@@ -12,14 +12,13 @@ public class PlayerBellRinger : MonoBehaviour
     public float ringCooldown = 3.0f;       // 两次摇铃之间的最小间隔
     private float lastRingTime = -999f;
 
-    // [Header("表现：动画 & 声音（可选）")]
-    // public Animator playerAnimator;         // 玩家或手部的 Animator（可选）
-    // public string bellTriggerName = "RingBell";  // Animator 里的 Trigger 名
-    // public AudioSource bellAudioSource;     // 播放铃声的 AudioSource（可选）
-    public GameObject bellObject;
+    [Header("表现：动画 & 声音")]
+    public Animator playerAnimator;         // 玩家或手部的 Animator（可选）
+    public string bellTriggerName = "RingBell";  // Animator 里的 Trigger 名
+    public AudioSource bellAudioSource;     // 播放铃声的 AudioSource（可选）
     void Start()
     {
-        bellObject.SetActive(false);
+        // bellObject.SetActive(false);
     }
     void Update()
     {
@@ -32,7 +31,6 @@ public class PlayerBellRinger : MonoBehaviour
 
     void TryRingBell()
     {
-        // bellObject.SetActive(true);
 
         // 冷却未到：直接返回
         if (Time.time - lastRingTime < ringCooldown)
@@ -45,17 +43,17 @@ public class PlayerBellRinger : MonoBehaviour
         }
 
         
-        // // 播放动画（可选）
-        // if (playerAnimator != null && !string.IsNullOrEmpty(bellTriggerName))
-        // {
-        //     playerAnimator.SetTrigger(bellTriggerName);
-        // }
+        // 播放动画
+        if (playerAnimator != null && !string.IsNullOrEmpty(bellTriggerName))
+        {
+            playerAnimator.SetTrigger(bellTriggerName);
+        }
 
-        // // 播放铃声音效（可选）
-        // if (bellAudioSource != null)
-        // {
-        //     bellAudioSource.Play();
-        // }
+        // 播放铃声音效
+        if (bellAudioSource != null)
+        {
+            bellAudioSource.Play();
+        }
 
         lastRingTime = Time.time;
     }

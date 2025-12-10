@@ -21,6 +21,10 @@ public class BellController : MonoBehaviour
     {
         
     }
+    // void onawake()
+    // {
+    //     OnRingBell();
+    // }
     public void OnRingBell()
     {
         // 播放动画（可选）

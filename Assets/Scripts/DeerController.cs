@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,14 +49,20 @@ public class DeerController : MonoBehaviour
     [Header("停留时间设置")]
     public float idleDisappearTime = 5f;     // 出现后停留多久自动消失
     private float idleTimer = 0f;
-
+    [Header("摇铃出现延迟")]
+    public float bellAppearDelay = 1f;   // 默认 1 秒
+    [Header("音效")]
+    public AudioSource deerAudioSource;   // 挂在鹿身上的 AudioSource
+    public AudioClip[] appearClipList;         // 鹿出现时播放的音效
+    [Header("玩家注视跑走触发距离")]
+    public float closeTriggerDistance = 6f;  // 玩家必须靠近鹿才能触发注视跑走
     private List<Transform> pathPoints;
     private Vector3 currentVanishPos;  // 当前段的消失位置（鹿跑到这里消失并掉光晕）
     private Vector3 lastVanishPos;     // 上一段的消失位置/光晕位置
     private bool   waitingForNextSpawn = false;
     private bool   finalSegmentPending = false; // 是否正在等待“最后一段”的光晕被踩掉
     private float  lookTimer = 0f;
-    public float closeTriggerDistance = 6f;  // 玩家必须靠近鹿才能触发注视跑走
+    
 
     void Start()
     {
@@ -306,6 +313,7 @@ public class DeerController : MonoBehaviour
         transform.rotation = Quaternion.identity;
 
         SetDeerVisible(true);
+        PlayAppearSound(); // 播放出现音效
         currentState = DeerState.Idle;
         // 出现时切回静止动画
         SetRunAnimation(false);
@@ -497,14 +505,46 @@ public class DeerController : MonoBehaviour
     #region 摇铃相关
     public void OnBellRung()
     {
-    // 若鹿正在跑、正在等待痕迹被踩掉 → 不出现
+    // 若鹿正在跑、正在等待痕迹被踩掉 / 或已经 Idle（说明已经出现）
     if (currentState == DeerState.RunAway || waitingForNextSpawn || currentState == DeerState.Idle)
         return;
 
-    // 否则在当前路径点出现（无论玩家在哪）
-    SpawnAtCurrentPoint(firstSpawn:false);
+    // 延迟出现
+    StartCoroutine(DelayedAppear());
     }
 
+    private IEnumerator DelayedAppear()
+    {
+    yield return new WaitForSeconds(bellAppearDelay);
+
+    // 再次判断：如果在等待时间里状态被改变，则不出现
+    if (currentState == DeerState.RunAway || waitingForNextSpawn || currentState == DeerState.Idle)
+        yield break;
+
+    SpawnAtCurrentPoint(firstSpawn:false);
+    }
+    /// 播放鹿出现音效
+    void PlayAppearSound()
+    {
+    if (deerAudioSource == null)
+        return;
+
+    // 如果数组为空或没有元素，直接用 AudioSource 自身的 clip
+    if (appearClipList == null || appearClipList.Length == 0)
+    {
+        deerAudioSource.Play();
+        return;
+    }
+
+    // 随机挑选一个音效
+    int idx = Random.Range(0, appearClipList.Length);
+    AudioClip clip = appearClipList[idx];
+
+    if (clip != null)
+    {
+        deerAudioSource.PlayOneShot(clip);
+    }
+    }
     #endregion
     void OnDrawGizmosSelected()
     {
