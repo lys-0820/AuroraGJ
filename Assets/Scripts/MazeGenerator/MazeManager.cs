@@ -116,6 +116,7 @@ public class MazeManager : MonoBehaviour
         mazeBuilder.ClearMaze();
         if (mazeDecorator != null)
             mazeDecorator.ClearProps();
+        TrailParticles.ClearAllTrails();
         currentMazeData = null;
 
         // 2. 配置本关迷宫参数

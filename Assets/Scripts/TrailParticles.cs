@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class TrailParticles : MonoBehaviour
 {
     [Header("轨迹粒子")]
@@ -10,6 +10,8 @@ public class TrailParticles : MonoBehaviour
     public float backwardOffsetValue = 1.3f; // 0.5f 是向后距离，可调
     private Vector3 lastSpawnPos;
     private bool hasSpawnedOnce = false;
+    // 记录所有生成的粒子对象
+    private static List<GameObject> allTrails = new List<GameObject>();
 
     void Update()
     {
@@ -47,11 +49,19 @@ public class TrailParticles : MonoBehaviour
 
     Vector3 spawnPos = worldPos + backwardOffset + Vector3.up * yOffset;
     GameObject go = Instantiate(trailPrefab, spawnPos, Quaternion.identity);
-
+    allTrails.Add(go);
     if (lifeTime > 0f)
         Destroy(go, lifeTime);
 
     lastSpawnPos = worldPos;
+    }
+    public static void ClearAllTrails()
+    {
+        foreach (var t in allTrails)
+        {
+            if (t != null) GameObject.Destroy(t);
+        }
+        allTrails.Clear();
     }
 
 }
