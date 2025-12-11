@@ -4816,8 +4816,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 4207292908975617}
-  sensitivity: 2
-  smoothing: 1.5
+  sensitivity: 1.2
+  smoothing: 2
 --- !u!114 &114762042678007271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7876,13 +7876,12 @@ MonoBehaviour:
   currentState: 0
   currentIndex: 0
   deerVisualRoot: {fileID: 3942950206624118703}
-  idleDisappearTime: 10
+  idleDisappearTime: 15
   bellAppearDelay: 1
   deerAudioSource: {fileID: 388788700}
   appearClipList:
   - {fileID: 8300000, guid: 30fdcf0721522074b8610f6359b2d5c8, type: 3}
   - {fileID: 8300000, guid: 55b8c03a3b085f64984688fbe2e3a62c, type: 3}
-  - {fileID: 8300000, guid: 58e4e4dc52582bc4bbe97b96315125c5, type: 3}
   runawayClip: {fileID: 8300000, guid: d895588ae00fbf2418f0a04a2d27de10, type: 3}
   closeTriggerDistance: 30
 --- !u!1 &4964284722037874253
