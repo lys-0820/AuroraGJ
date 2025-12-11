@@ -16,14 +16,6 @@ public class MazeBuilder : MonoBehaviour
     [Tooltip("每个格子的间距（决定迷宫整体大小）")]
     public float cellSize = 2f;
 
-    [Tooltip("是否按 cellSize / wallHeight / wallThickness 缩放树（一般树不需要，默认关掉）")]
-    public bool scaleWalls = false;
-
-    [Tooltip("缩放用：墙的高度")]
-    public float wallHeight = 2f;
-
-    [Tooltip("缩放用：墙的厚度")]
-    public float wallThickness = 0.2f;
 
     [Header("Tree Strip Settings")]
     [Tooltip("每一段墙上生成多少棵树（>=1）")]
@@ -56,7 +48,21 @@ public class MazeBuilder : MonoBehaviour
     [Header("Spacing Control")]
     [Tooltip("树之间的最小水平距离（XZ），防止堆叠")]
     public float minTreeDistance = 0.8f;
+    [Header("Per-Tree Randomization")]
+    [Tooltip("是否对每棵树做随机缩放")]
+    public bool randomizeScale = true;
 
+    [Tooltip("高度缩放范围（乘以原始高度）")]
+    public Vector2 randomScaleYRange = new Vector2(0.8f, 1.3f);
+
+    [Tooltip("横向(XZ)缩放范围（乘以原始宽度/厚度）")]
+    public Vector2 randomScaleXZRange = new Vector2(0.9f, 1.1f);
+
+    [Tooltip("是否让树稍微倾斜（绕 X/Z 轴随机旋转）")]
+    public bool randomizeTilt = true;
+
+    [Tooltip("最大倾斜角度（度），比如 5~10 度即可")]
+    public float maxTiltAngle = 7f;
     private List<GameObject> spawnedObjects = new List<GameObject>();
     private List<Vector3> placedTreePositions = new List<Vector3>();  // 记录已放树的位置，用于间距检查
     private MazeData currentData;
@@ -213,15 +219,29 @@ public class MazeBuilder : MonoBehaviour
 
         GameObject tree = Instantiate(prefab, finalPos, rotation, transform);
 
-        if (scaleWalls)
+        // 在当前基础上做随机缩放
+        if (randomizeScale)
         {
+            Vector3 baseScale = tree.transform.localScale;
+
+            float sxzMul = 1f;
+            if (randomScaleXZRange.x != 0f || randomScaleXZRange.y != 0f)
+            {
+                sxzMul = Random.Range(randomScaleXZRange.x, randomScaleXZRange.y);
+            }
+
+            float syMul = 1f;
+            if (randomScaleYRange.x != 0f || randomScaleYRange.y != 0f)
+            {
+                syMul = Random.Range(randomScaleYRange.x, randomScaleYRange.y);
+            }
+
             tree.transform.localScale = new Vector3(
-                cellSize,
-                wallHeight,
-                wallThickness
+                baseScale.x * sxzMul,
+                baseScale.y * syMul,
+                baseScale.z * sxzMul
             );
         }
-
         spawnedObjects.Add(tree);
         placedTreePositions.Add(finalPos);
     }

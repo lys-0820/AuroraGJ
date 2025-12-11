@@ -27,6 +27,9 @@ public class MazeDecorator : MonoBehaviour
 
     [Tooltip("是否随机 Y 轴旋转地面装饰")]
     public bool randomPathPropRotationY = true;
+    [Header("Path Props Scale")]
+    [Tooltip("地面装饰的随机缩放范围（min, max）")]
+    public Vector2 pathPropScaleRange = new Vector2(0.8f, 1.4f);
 
 
     [Header("Outer Border Settings")]
@@ -73,7 +76,7 @@ public class MazeDecorator : MonoBehaviour
 
     [Tooltip("外围树最大倾斜角度（度）")]
     public float borderMaxTiltAngle = 6f;
-
+    
     // 记录所有装饰物，方便 ClearProps
     private readonly List<GameObject> spawnedProps = new List<GameObject>();
 
@@ -155,6 +158,8 @@ private void DecoratePaths(MazeData data)
                 }
 
                 GameObject inst = Instantiate(prefab, finalPos, rot, transform);
+                float scale = Random.Range(pathPropScaleRange.x, pathPropScaleRange.y);
+                inst.transform.localScale = inst.transform.localScale * scale;
                 spawnedProps.Add(inst);
             }
         }
