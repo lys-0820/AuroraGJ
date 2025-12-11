@@ -5863,7 +5863,7 @@ MonoBehaviour:
   currentState: 0
   currentIndex: 0
   deerVisualRoot: {fileID: 3942950206624118703}
-  idleDisappearTime: 30
+  idleDisappearTime: 10
   bellAppearDelay: 1
   deerAudioSource: {fileID: 388788700}
   appearClipList:
