@@ -131,7 +131,7 @@ public class MazeBuilder : MonoBehaviour
         if (exitPrefab != null && data.endCell != null)
         {
             Vector3 exitBasePos = CellToWorld(data.endCell);
-            Vector3 exitPos = SnapToGround(exitBasePos) + Vector3.up * 0.5f;
+            Vector3 exitPos = SnapToGround(exitBasePos) + Vector3.up * 1.3f;
             GameObject exitObj = Instantiate(exitPrefab, exitPos, Quaternion.identity, transform);
             spawnedObjects.Add(exitObj);
         }

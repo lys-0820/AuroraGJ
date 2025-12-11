@@ -76,6 +76,13 @@ public class MazeExit : MonoBehaviour
         {
             exitCollider.enabled = visible;
         }
+        if (visible && player != null)
+{
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0f;  // 保证水平旋转，不歪头
+        if (dir.sqrMagnitude > 0.001f)
+            transform.rotation = Quaternion.LookRotation(dir);
+}
     }
 
     private void OnTriggerEnter(Collider other)
