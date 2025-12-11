@@ -54,6 +54,7 @@ public class DeerController : MonoBehaviour
     [Header("音效")]
     public AudioSource deerAudioSource;   // 挂在鹿身上的 AudioSource
     public AudioClip[] appearClipList;         // 鹿出现时播放的音效
+    public AudioClip runawayClip;              // 鹿跑走时播放的音效
     [Header("玩家注视跑走触发距离")]
     public float closeTriggerDistance = 6f;  // 玩家必须靠近鹿才能触发注视跑走
     private List<Transform> pathPoints;
@@ -380,6 +381,7 @@ public class DeerController : MonoBehaviour
         // 切到跑步动画
         SetRunAnimation(true);
         waitingForNextSpawn = true;   // 禁止摇铃出现（直到痕迹被踩掉）
+        PlayRunAwaySound(); // 播放跑走音效
     }
 
     // 跑到消失点 → 掉落光晕 → 等待玩家踩掉
@@ -543,6 +545,16 @@ public class DeerController : MonoBehaviour
     if (clip != null)
     {
         deerAudioSource.PlayOneShot(clip);
+    }
+    }
+    void PlayRunAwaySound()
+    {
+    // 跑走时的音效播放逻辑
+    if (deerAudioSource == null)
+        return;
+    if(runawayClip != null)
+    {
+        deerAudioSource.PlayOneShot(runawayClip);
     }
     }
     #endregion
