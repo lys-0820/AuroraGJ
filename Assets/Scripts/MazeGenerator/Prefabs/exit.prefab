@@ -97,6 +97,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c468b4abf3fefbe4dbe430484964660f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  appearDistance: 25
+  renderersToToggle: []
 --- !u!135 &360149122591511721
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -1002,7 +1002,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: ea8b6cbbe1f273543bfb94309b2a7df1, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1651,23 +1651,23 @@ MonoBehaviour:
   - {fileID: 1430010379510354841, guid: d2f203792bea9e845b767632666bda51, type: 3}
   maxTreeTypesToUse: 0
   exitPrefab: {fileID: 7954125097642270493, guid: b8b4d6bf21c82b846b50b79caf725a8d, type: 3}
-  cellSize: 10
-  treesPerSegment: 20
+  cellSize: 7
+  treesPerSegment: 15
   pathWidthFactor: 0.7
-  positionJitterAlong: 1.8
-  positionJitterPerp: 2
+  positionJitterAlong: 0.5
+  positionJitterPerp: 1.3
   rotationJitterY: 30
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   raycastHeight: 50
   groundOffset: 0
-  minTreeDistance: 1.2
+  minTreeDistance: 1
   randomizeScale: 1
   randomScaleYRange: {x: 0.8, y: 1.3}
-  randomScaleXZRange: {x: 0.9, y: 1.1}
+  randomScaleXZRange: {x: 0.7, y: 1.1}
   randomizeTilt: 1
-  maxTiltAngle: 7
+  maxTiltAngle: 10
 --- !u!4 &1384885025
 Transform:
   m_ObjectHideFlags: 0
@@ -1892,23 +1892,23 @@ MonoBehaviour:
     deerFirstPointMinDistance: -1
     deerPointMinDistance: -1
   - mazeType: 2
-    width: 5
-    height: 7
+    width: 12
+    height: 14
     treeVariantCount: 6
-    deerFirstPointMinDistance: 20
-    deerPointMinDistance: 40
+    deerFirstPointMinDistance: 40
+    deerPointMinDistance: 50
   - mazeType: 4
-    width: 10
-    height: 12
+    width: 18
+    height: 20
     treeVariantCount: 0
-    deerFirstPointMinDistance: 30
-    deerPointMinDistance: 50
+    deerFirstPointMinDistance: 40
+    deerPointMinDistance: 60
   - mazeType: 5
-    width: 15
-    height: 15
+    width: 20
+    height: 20
     treeVariantCount: 0
-    deerFirstPointMinDistance: 30
-    deerPointMinDistance: 50
+    deerFirstPointMinDistance: 50
+    deerPointMinDistance: 60
   enableDebugRegenerate: 1
   debugRegenerateKey: 114
   showMazeSizeGizmos: 1
@@ -5849,12 +5849,9 @@ MonoBehaviour:
   bellAppearDelay: 1
   deerAudioSource: {fileID: 388788700}
   appearClipList:
-  - {fileID: 8300000, guid: 91d0e12068a666945904205854449d1d, type: 3}
-  - {fileID: 8300000, guid: 02329aa05d955964a8401cf5f15b2b29, type: 3}
-  - {fileID: 8300000, guid: fb211ae1ac00a0749b95eed1ebae5c4e, type: 3}
-  - {fileID: 8300000, guid: a102904f7643a8b4583a5bf9048104ac, type: 3}
-  - {fileID: 8300000, guid: 0dafab1764dc19841b27e2af3695be1e, type: 3}
-  runawayClip: {fileID: 8300000, guid: 627cd0c423bb715428ced24b957ddcf4, type: 3}
+  - {fileID: 8300000, guid: 30fdcf0721522074b8610f6359b2d5c8, type: 3}
+  - {fileID: 8300000, guid: 55b8c03a3b085f64984688fbe2e3a62c, type: 3}
+  runawayClip: {fileID: 8300000, guid: d895588ae00fbf2418f0a04a2d27de10, type: 3}
   closeTriggerDistance: 30
 --- !u!1 &4964284722037874253
 GameObject:
