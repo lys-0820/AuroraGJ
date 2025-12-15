@@ -162,7 +162,7 @@ Shader "Aurora/AuroraSky_URP"
 
             float GetAurora(float3 p) {
                 p += Aurorafbm(float3(p.x,p.y,0.0)*0.5)*2.25;
-                float a = smoothstep(.0, .9, Aurorafbm(p*2.)*2.2-1.1);
+                float a = smoothstep(.89, .9, Aurorafbm(p*2.)*2.2-1.1);
                 return a<0.0 ? 0.0 : a;
             }
 

@@ -27,6 +27,7 @@ public class BellController : MonoBehaviour
     // }
     public void OnRingBell()
     {
+        Debug.Log("Bell rung!");
         // 播放动画（可选）
         if (playerAnimator != null && !string.IsNullOrEmpty(bellTriggerName))
         {
@@ -36,7 +37,12 @@ public class BellController : MonoBehaviour
         // 播放铃声音效（可选）
         if (bellAudioSource != null)
         {
+            Debug.Log("Playing bell sound");
             bellAudioSource.Play();
+        }
+        else
+        {
+            Debug.Log("No AudioSource assigned for bell sound");
         }
 
     }
